@@ -6,7 +6,7 @@ using ScottPlot;
 
 namespace Lab08
 {
-    
+    // ------------------- Классы для симуляции (без изменений) -------------------
     enum SimEventType { Arrival, ServiceComplete }
 
     class SimEvent
@@ -181,7 +181,7 @@ namespace Lab08
         private int FindFreeChannel() => Array.IndexOf(_busy, false);
     }
 
-    
+    // ------------------- Теоретические формулы (Эрланг B) -------------------
     static class ErlangFormulas
     {
         public static (double P0, double Ploss) Compute(int n, double a)
@@ -260,11 +260,11 @@ namespace Lab08
                 theoAvgBusy[idx] = ErlangFormulas.AvgBusyChannels(a, ploss);
             }
 
-            // Создаём папку results
-            Directory.CreateDirectory("results");
+            // Создаём папку для графиков (result)
+            Directory.CreateDirectory("result");
 
-            // ------------------- Запись расширенного отчёта в result.txt -------------------
-            using (var writer = new StreamWriter("results/result.txt", false, System.Text.Encoding.UTF8))
+            // ------------------- Запись отчёта в файл results.txt (в корне) -------------------
+            using (var writer = new StreamWriter("results.txt", false, System.Text.Encoding.UTF8))
             {
                 writer.WriteLine("ОТЧЁТ ПО ЛАБОРАТОРНОЙ РАБОТЕ");
                 writer.WriteLine("Моделирование многоканальной СМО с отказами (M/M/n/0)");
@@ -318,21 +318,27 @@ namespace Lab08
                 writer.WriteLine("    - абсолютная пропускная способность A сначала растёт, затем достигает");
                 writer.WriteLine("      насыщения (стремится к n*μ);");
                 writer.WriteLine("    - среднее число занятых каналов увеличивается.");
-                writer.WriteLine("• Полученные графики (см. p-1.png … p-5.png) наглядно иллюстрируют эти зависимости.");
+                writer.WriteLine("• Полученные графики (см. result/p-1.png … result/p-5.png) наглядно иллюстрируют эти зависимости.");
                 writer.WriteLine();
+                writer.WriteLine("Отчёт сгенерирован автоматически программой моделирования СМО.");
             }
 
-            // ------------------- Генерация 5 графиков -------------------
+            // ------------------- Генерация 5 графиков в папку result/ -------------------
             Console.WriteLine("Генерация графиков...");
-            GeneratePlot(lambdas, expPIdle, theoPIdle, "Вероятность простоя системы P₀(λ)", "λ (интенсивность входного потока)", "Вероятность", "results/p-1.png");
-            GeneratePlot(lambdas, expPReject, theoPReject, "Вероятность отказа Pотк(λ)", "λ (интенсивность входного потока)", "Вероятность", "results/p-2.png");
-            GeneratePlot(lambdas, expQ, theoQ, "Относительная пропускная способность Q(λ)", "λ (интенсивность входного потока)", "Q", "results/p-3.png");
-            GeneratePlot(lambdas, expA, theoA, "Абсолютная пропускная способность A(λ)", "λ (интенсивность входного потока)", "Заявок в ед. времени", "results/p-4.png");
-            GeneratePlot(lambdas, expAvgBusy, theoAvgBusy, "Среднее число занятых каналов Nзан(λ)", "λ (интенсивность входного потока)", "Занятые каналы", "results/p-5.png");
+            GeneratePlot(lambdas, expPIdle, theoPIdle, "Вероятность простоя системы P₀(λ)", 
+                "λ (интенсивность входного потока)", "Вероятность", "result/p-1.png");
+            GeneratePlot(lambdas, expPReject, theoPReject, "Вероятность отказа Pотк(λ)", 
+                "λ (интенсивность входного потока)", "Вероятность", "result/p-2.png");
+            GeneratePlot(lambdas, expQ, theoQ, "Относительная пропускная способность Q(λ)", 
+                "λ (интенсивность входного потока)", "Q", "result/p-3.png");
+            GeneratePlot(lambdas, expA, theoA, "Абсолютная пропускная способность A(λ)", 
+                "λ (интенсивность входного потока)", "Заявок в ед. времени", "result/p-4.png");
+            GeneratePlot(lambdas, expAvgBusy, theoAvgBusy, "Среднее число занятых каналов Nзан(λ)", 
+                "λ (интенсивность входного потока)", "Занятые каналы", "result/p-5.png");
 
-            Console.WriteLine("Готово! Результаты сохранены в папку 'results'.");
-            Console.WriteLine("  - result.txt   – отчёт с формулами, таблицами и выводами");
-            Console.WriteLine("  - p-1.png … p-5.png – графики зависимости показателей от λ");
+            Console.WriteLine("Готово! Результаты сохранены:");
+            Console.WriteLine("  - results.txt   – отчёт с формулами, таблицами и выводами");
+            Console.WriteLine("  - result/p-1.png … result/p-5.png – графики зависимостей");
         }
 
         static void GeneratePlot(double[] x, double[] expY, double[] theoY, string title, string xLabel, string yLabel, string filePath)
